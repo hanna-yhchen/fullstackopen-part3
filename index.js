@@ -31,6 +31,33 @@ app.get('/api/persons', (request, response) => {
   response.json(persons)
 })
 
+app.post('/api/persons', (request, response) => {
+  const body = request.body
+
+  if (!body.name || !body.number) {
+    response.status(400).json({
+      error: 'name or number missing'
+    })
+    return
+  }
+
+  const existingPerson = persons.find((person) => person.name === body.name)
+  if (existingPerson) {
+    response.status(400).json({
+      error: 'name must be unique'
+    })
+    return
+  }
+
+  const person = {
+    id: getRandomInt(),
+    name: body.name,
+    number: body.number
+  }
+  persons.push(person)
+  response.json(person)
+})
+
 app.get('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id)
   const person = persons.find(person => person.id === id)
@@ -50,11 +77,15 @@ app.delete('/api/persons/:id', (request, response) => {
 app.get('/info', (request, response) => {
   const date = new Date()
   response.send(/* html */ `
-    <p>Phonebook has info for ${persons.length} people</p>
-    <p>${(date).toString()}</p>
+  <p>Phonebook has info for ${persons.length} people</p>
+  <p>${(date).toString()}</p>
   `)
 })
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
+
+function getRandomInt (max = Number.MAX_SAFE_INTEGER) {
+  return Math.floor(Math.random() * max)
+}
