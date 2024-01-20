@@ -15,8 +15,20 @@ try {
 export const Person = mongoose.model(
   'Person',
   new mongoose.Schema({
-    name: String,
-    number: String
+    name: {
+      type: String,
+      minLength: 3,
+      require: true
+    },
+    number: {
+      type: String,
+      minLength: 8,
+      validate: {
+        validator: (value) => /\d{2,3}-\d+/.test(value),
+        message: (props) => `${props.value} is not a valid phone number!`
+      },
+      require: true
+    }
   }, {
     toJSON: {
       transform: (_, returnedObject) => {

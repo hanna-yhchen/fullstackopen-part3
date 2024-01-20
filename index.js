@@ -26,15 +26,7 @@ app.get('/api/persons', asyncHandler(async (_, response) => {
 app.post('/api/persons', asyncHandler(async (request, response) => {
   const body = request.body
 
-  if (!body.name || !body.number) {
-    response.status(400).json({
-      error: 'name or number missing'
-    })
-    return
-  }
-
   const existingPersonsWithSameName = await Person.find({ name: body.name })
-  console.log(existingPersonsWithSameName)
   if (existingPersonsWithSameName.length > 0) {
     response.status(400).json({
       error: 'name must be unique'
@@ -61,12 +53,16 @@ app.get('/api/persons/:id', asyncHandler(async (request, response) => {
 }))
 
 app.put('/api/persons/:id', asyncHandler(async (request, response) => {
-  const body = request.body
-  const person = {
-    name: body.name,
-    number: body.number
-  }
-  const updated = await Person.findByIdAndUpdate(request.params.id, person, { new: true })
+  const { name, number } = request.body
+  const updated = await Person.findByIdAndUpdate(
+    request.params.id,
+    { name, number },
+    {
+      new: true,
+      runValidators: true,
+      context: 'query'
+    }
+  )
   if (updated) {
     response.json(updated)
   } else {
@@ -96,7 +92,9 @@ app.use(unknownEndpoint)
 const errorHandler = (error, _, response, next) => {
   console.error(error.message)
   if (error.name === 'CastError') {
-    return response.status(400).send({ error: 'malformatted id' })
+    return response.status(400).json({ error: 'malformatted id' })
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
   }
   next(error)
 }
