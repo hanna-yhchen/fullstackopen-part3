@@ -1,2 +1,4 @@
-node_modules/
-rest-client/
+**/.git
+**/.DS_Store
+**/node_modules
+Dockerfile*

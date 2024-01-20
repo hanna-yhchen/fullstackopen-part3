@@ -1,5 +1,5 @@
 {
-  "name": "fsopen-3-node-and-express",
+  "name": "phonebook",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -7,7 +7,11 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:ui": "rm -rf frontend/dist && cd frontend && pnpm run build",
+    "deploy": "fly deploy",
+    "deploy:full": "pnpm run build:ui && pnpm run deploy",
+    "logs:prod": "fly logs"
   },
   "keywords": [],
   "author": "",
