@@ -1,3 +1,4 @@
+import cors from 'cors'
 import express from 'express'
 import morgan from 'morgan'
 
@@ -24,9 +25,10 @@ let persons = [
   }
 ]
 
-const PORT = 3001
+const PORT = process.env.PORT || 3000
 const app = express()
 app.use(express.json())
+app.use(cors())
 
 morgan.token('request-body', (request, response) => JSON.stringify(request.body))
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :request-body'))
